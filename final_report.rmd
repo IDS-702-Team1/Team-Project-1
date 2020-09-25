@@ -94,9 +94,9 @@ These questions would help us understand the potential association of the impact
 
 ## DATA & EDA 
 
-### Response Variable
+### PART I
 
-Since the goal is to determine the effects of job training on salary increment, the response variable is the difference in salary between 1974 and 1978. Its distribution is quite normal; hence there is no transformation for the response variable. 
+Since the goal is to determine the effects of job training on salary increment, we take the response variable as the difference in salary between 1974 and 1978 and look at its distribution. Since, the distribution is quite normal, there is no transformation for the response variable. 
 
 ```{r, echo=FALSE, out.height='20%', fig.align='center', fig.show='hold'}
 
@@ -117,9 +117,7 @@ ggplot(lalondedata, aes(x = diff)) +
 
 ```
 
-### Predict Vraibles
-
-Unlike the relationship between age and 'treat' (Right), the relationship between education(left) and 'treat' is not linear. It indicates that there is some non-linear transformation should be performed on education. After evaluation, we decide to use the square to transform the variable, and the final model's p-value confirmed the is.
+We then look at the trends between the response variables and other varaiables. We find that age shows a linear decreasing relation. While education seems to show a non-linear relation. The other categorical variables treat, black, hispan and married also seem to show differences with the differences in wages. However, with the variable non-degree we don't see much difference. Thereafter, we look at some potential interaction effects.
 
 ```{r, echo=FALSE, out.width=c('50%', '50%'), out.height='20%', fig.show='hold', message=FALSE}
 
