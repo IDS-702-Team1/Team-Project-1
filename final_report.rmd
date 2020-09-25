@@ -69,7 +69,10 @@ lalondedata$educc2 <- lalondedata$educc ^ 2
 
 ## Summary
 
-In this investigation, a linear regression model was built to quest whether or not workers who receive job training tend to earn higher wages than workers who do not receive job training. This research is based on a dataset from the National Supported Work (NSW) Demonstration (1975-1978). For detailed information on this research, please check the following papers. 
+Through this report we try to analyze the impact of a training program by gauging its effect on the real annual earnings and through its likeliness to help the participants earn a non-zero wage. To do so, we use  linear  and logitic regression models  respectively. We use a dataset from the National Supported Work (NSW) Demonstration (1975-1978) for the same and build models using the AIC/BIC criterion based on the statistical significance and reasonableness. We then find out that ......have significant association with annual incomes suggesting that taking the training might be an important factor associated with increase in wages. Also, We find that non-zero wages are associated with ...... suggesting that training is not a very significant factor associated with non-zero wages. Thus, it can be understood that training program as a factor does not seem to have a very strong association with improvement in wages or by providing a source of earning.
+
+
+For detailed information on this research, please check the following papers. 
 
 - [Paper 1](https://www.jstor.org/tc/accept?origin=%2Fstable%2Fpdf%2F1806062.pdf)
 - [Paper 2](https://uh.edu/~adkugler/Dehejia&Wahba_JASA.pdf)
@@ -77,14 +80,17 @@ In this investigation, a linear regression model was built to quest whether or n
 
 ## Introduction
 
-In the 1970s, researchers in the United States ran several randomized experiments to evaluate public policy programs. One of the most famous experiments is the National Supported Work (NSW) Demonstration, in which researchers wanted to assess whether or not job training for disadvantaged workers had an effect on their wages. This analysis is base on a subset of the investigation. We try to answer the following question with a linear regression model based on such data. 
+In the 1970s, researchers in the United States ran several randomized experiments to evaluate public policy programs. One of the most famous experiments is the National Supported Work (NSW) Demonstration, in which researchers wanted to assess whether or not job training for disadvantaged workers had an effect on their wages. Based on a subset of the investigation, in order to undersatnd the impact of the training program we need to look at two main questions:
 
-- Weather the job training did increase the workers' annual salary. If so, how many salary was increased by the training. 
+Part I: Is there evidence that workers who receive job training tend to earn higher wages than workers who do not receive job training?
 
-- Did the effect of job training variy by other factors. 
+To address this question we need to look at quantify the effect of the treatment, that is, receiving job training, on real annual earnings and understanding the likely range for the effect of training. We also need to check if there is any evidence that the effects differ by demographic groups and if there are other interesting associations with wages.
 
-- Aside from the training, is there any other factors would influence the workers' salaery ?
- 
+Part II: Is there evidence that workers who receive job training tend to be more likely to have positive (non-zero) wages than workers who do not receive job training?
+
+To understand this question we need to quantify the effect of the treatment, that is, receiving job training, on the odds of having non-zero wages and what would be the likely range for the effect of training. We also need to see if there is any evidence that the effects differ by demographic groups and also if there are other interesting associations with positive wages.
+
+These questions would help us understand the potential association of the impact of the training program on the wages. To answer these questions the report uses a linear regression on the differences in wages and a logistic regression model on the odds of getting a non-zero wage after the training. It begins with an EDA of the data, tries building a model by exploring models built with the help of AIC and BIC criteria using forward and stepwise model building and chooses the most suitable model on the basis of accuracy and plausibility to answer the above questions.
 
 ## DATA & EDA 
 
