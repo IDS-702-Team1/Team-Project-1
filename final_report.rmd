@@ -69,7 +69,7 @@ lalondedata$educc2 <- lalondedata$educc ^ 2
 
 ## Summary
 
-In this investigation, a linear regression model was built to quest whether or not workers who receive job training tend to earn higher wages than workers who do not receive job training. This research is based on a dataset from the National Supported Work (NSW) Demonstration (1975-1978). For detailed information on this research, please check the following papers. 
+Through this report we analyze the impact of a training program on the real annual earnings. To do so, a linear regression model was built to quest whether or not workers who receive job training tend to earn higher wages than workers who do not receive job training. This research is based on a dataset from the National Supported Work (NSW) Demonstration (1975-1978). For detailed information on this research, please check the following papers. 
 
 - [Paper 1](https://www.jstor.org/tc/accept?origin=%2Fstable%2Fpdf%2F1806062.pdf)
 - [Paper 2](https://uh.edu/~adkugler/Dehejia&Wahba_JASA.pdf)
