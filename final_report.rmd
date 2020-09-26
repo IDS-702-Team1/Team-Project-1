@@ -409,7 +409,7 @@ $$
 and the Full Model used is:
 $$
 \begin{aligned}
-logit(\pi_{i}) = &\beta_{0} + (\beta_{1}agec_{i} + \beta_{2}educc_{i} + \beta_{3}treat_{i} + \beta_{4}black_{i} + \beta_{5}hispan_{i} + \beta_{6}married_{i} + \beta_{7}nodegree_{i})^2+ \beta_{8}*age_{i}c^2 + \varepsilon_{i}
+logit(\pi_{i}) = &\beta_{0} + (\beta_{1}agec_{i} + \beta_{2}educc_{i} + \beta_{3}treat_{i} + \beta_{4}black_{i} + \beta_{5}hispan_{i} + \beta_{6}married_{i} + \beta_{7}nodegree_{i})^2+ \\ &\beta_{8}*age_{i}c^2 + \varepsilon_{i}
 \end{aligned}
 $$
 
