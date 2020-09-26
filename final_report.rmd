@@ -167,6 +167,12 @@ ggplot(lalondedata, aes(x = age, y = diff)) +
 
 ### Model selection
 
+On the basis of the above, the logistic regression model is developed after considering the stepwise and forward7 built models using the AIC and BIC criteria and then selected. The Null Model used is ------- and the Full Model used is:------. Feeding these models, the AIC Forward Model found is: , the AIC Stepwise Model is: ,while with BIC Forward is: ---- and the BIC Stepwise Model is:------.
+
+From the above we find that AIC forward model is the most statistically significant with p-value as: . We then compare this model with a number of other models including and excluding the variables.......... On doing the tests we find that the final model should be .
+
+Intuitively too, this makes sense that changes in wages is impacted by age, education, ....
+
 1. We find some signs of interaction between "treat" and "age" in EDA. The business was confirmed in our model. Its p-value is significantly small than 0.05. 
 
 2. Interaction between "married" and "age" was found in this step. It's p-Value is slightly above 0.05, but it small than 0.1. The ANOVA test also indicates that it would improve our model significantly. Hence it was preserved in our final model. 
