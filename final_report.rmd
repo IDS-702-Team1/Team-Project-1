@@ -605,7 +605,7 @@ roc_value <-coords(roc, cutoff, transpose = FALSE)
 
 
 \newpage
-# Appendix II (Part1 R Code)
+# Appendix II (Part2 R Code)
 
 ````
 `r paste(readLines('Part 2_v3.R'), collapse = '\n')`
