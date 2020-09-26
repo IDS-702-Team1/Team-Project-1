@@ -170,12 +170,6 @@ ggplot(lalondedata, aes(x = age, y = diff)) +
 
 ### Model selection
 
-On the basis of the above, the logistic regression model is developed after considering the stepwise and forward7 built models using the AIC and BIC criteria and then selected. The Null Model used is ------- and the Full Model used is:------. Feeding these models, the AIC Forward Model found is: , the AIC Stepwise Model is: ,while with BIC Forward is: ---- and the BIC Stepwise Model is:------.
-
-From the above we find that AIC forward model is the most statistically significant with p-value as: . We then compare this model with a number of other models including and excluding the variables.......... On doing the tests we find that the final model should be .
-
-Intuitively too, this makes sense that changes in wages is impacted by age, education, ....
-
 1. We find some signs of interaction between "treat" and "age" in EDA. The business was confirmed in our model. Its p-value is significantly small than 0.05. 
 
 2. Interaction between "married" and "age" was found in this step. It's p-Value is slightly above 0.05, but it small than 0.1. The ANOVA test also indicates that it would improve our model significantly. Hence it was preserved in our final model. 
@@ -186,9 +180,9 @@ Intuitively too, this makes sense that changes in wages is impacted by age, educ
 
 $$
 \begin{aligned}
-diff = &\beta_{0} + \beta_{1}*black + \beta_{2}*hispan + \beta_{3}*agec + \\ 
-                 &\beta_{4}*married + \beta_{5}*treat:agec + \beta_{6}*educc + \\
-                 &\beta_{7}*educc^2 + \beta_{8}agec:married
+diff_{i} = &\beta_{0} + \beta_{1}*black_{i} + \beta_{2}*hispan_{i} + \beta_{3}*agec_{i} + \\ 
+                 &\beta_{4}*married_{i} + \beta_{5}*treat_{i}:agec_{i} + \beta_{6}*educc_{i} + \\
+                 &\beta_{7}*educc_{i}^2 + \beta_{8}agec:married_{i} + \varepsilon_{i}
 \end{aligned}
 $$
 
@@ -406,13 +400,26 @@ xtable(hispan_marriage, caption = "Employed rate with marital status - Hispanic"
 
 ### Model selection
 
-1. By AIC forward-searching, we find a square transform of "age" is significant in the model. After verification with ANOVA test, we decide to keep this transformation in the final model
+1. On the basis of the above, the logistic regression model is developed after considering the stepwise and forward built models using the AIC criteria and then selected. The Null Model used is :
+$$
+\begin{aligned}
+logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat_{i} + \beta_{2}*black_{i} + \beta_{3}*agec_{i} + \beta_{4}*agec_{i}^2 + \varepsilon_{i}
+\end{aligned}
+$$
+and the Full Model used is:
+$$
+\begin{aligned}
+logit(\pi_{i}) = &\beta_{0} + (\beta_{1}agec_{i} + \beta_{2}educc_{i} + \beta_{3}treat_{i} + \beta_{4}black_{i} + \beta_{5}hispan_{i} + \beta_{6}married_{i} + \beta_{7}nodegree_{i})^2+ \beta_{8}*age_{i}c^2 + \varepsilon_{i}
+\end{aligned}
+$$
 
-2. The interactions between "age" and "married" and "degree" were confirmed by the p-value. Even though the p-value is "married" and "treat" not strong significant, the ANOVA test tips it means full. 
+2. By AIC forward-searching, we find a square transform of "age" is significant in the model. After verification with ANOVA test, we decide to keep this transformation in the final model
 
-3. The interaction between "hispan1" and "married" was confirmed, and its p-value is significant.
+3. The interactions between "age" and "married" and "degree" were confirmed by the p-value. Even though the p-value is "married" and "treat" not strong significant, the ANOVA test tips it means full. 
 
-4. Tread was not significant in our final model. However, it is a key predictor variable for answering the question. Hence, we preserve it in our final model. 
+4. The interaction between "hispan1" and "married" was confirmed, and its p-value is significant.
+
+5. Tread was not significant in our final model. However, it is a key predictor variable for answering the question. Hence, we preserve it in our final model. 
 
 
 ### Final model
@@ -420,7 +427,7 @@ xtable(hispan_marriage, caption = "Employed rate with marital status - Hispanic"
 
 $$
 \begin{aligned}
-logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat + \beta_{2}*black + \beta_{3}*agec + \beta_{4}*agec^2 + \beta_{5}*nodegree + \beta_{6}*hispan +\\                          &\beta_{7}*married + \beta_{8}*agec:nodegree + \beta_{9}*hispan:married + \beta_{10}*agec:treat
+logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat_{i} + \beta_{2}*black_{i} + \beta_{3}*agec_{i} + \beta_{4}*agec_{i}^2 + \beta_{5}*nodegree_{i} + \beta_{6}*hispan_{i} +\\                          &\beta_{7}*married_{i} + \beta_{8}*agec_{i}:nodegree_{i} + \beta_{9}*hispan_{i}:married_{i} + \beta_{10}*agec_{i}:treat_{i}+ \varepsilon_{i}
 \end{aligned}
 $$
 
