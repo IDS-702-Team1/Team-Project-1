@@ -170,6 +170,12 @@ ggplot(lalondedata, aes(x = age, y = diff)) +
 
 ### Model selection
 
+On the basis of the above, the logistic regression model is developed after considering the stepwise and forward7 built models using the AIC and BIC criteria and then selected. The Null Model used is ------- and the Full Model used is:------. Feeding these models, the AIC Forward Model found is: , the AIC Stepwise Model is: ,while with BIC Forward is: ---- and the BIC Stepwise Model is:------.
+
+From the above we find that AIC forward model is the most statistically significant with p-value as: . We then compare this model with a number of other models including and excluding the variables.......... On doing the tests we find that the final model should be .
+
+Intuitively too, this makes sense that changes in wages is impacted by age, education, ....
+
 1. We find some signs of interaction between "treat" and "age" in EDA. The business was confirmed in our model. Its p-value is significantly small than 0.05. 
 
 2. Interaction between "married" and "age" was found in this step. It's p-Value is slightly above 0.05, but it small than 0.1. The ANOVA test also indicates that it would improve our model significantly. Hence it was preserved in our final model. 
@@ -347,10 +353,14 @@ lalondedata$agec2 <- lalondedata$agec ^ 2
 
 ```
 
+### Collinearity
+
+- As the same reason mentioned in Part I, we exclude "educ" from our model.
+
 
 ### Interactions
 
-```{r echo = FALSE, results='asis', out.width=c('50%', '50%'),  out.height='30%'}
+```{r echo = FALSE, results='asis', out.width=c('50%', '50%'),  out.height='20%'}
 
 ggplot(lalondedata, aes(x = earnf, y = age, fill = earnf)) +
   geom_boxplot() + coord_flip() +
@@ -410,8 +420,7 @@ xtable(hispan_marriage, caption = "Employed rate with marital status - Hispanic"
 
 $$
 \begin{aligned}
-logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat + \beta_{2}*black + \beta_{3}*agec + \beta_{4}*agec^2 + \\                   &\beta_{5}*nodegree + \beta_{6}*hispan + \beta_{7}*married + \\
-                 &\beta_{8}*agec:nodegree + \beta_{9}*hispan:married + \beta_{10}*agec:treat
+logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat + \beta_{2}*black + \beta_{3}*agec + \beta_{4}*agec^2 + \beta_{5}*nodegree + \beta_{6}*hispan +\\                          &\beta_{7}*married + \beta_{8}*agec:nodegree + \beta_{9}*hispan:married + \beta_{10}*agec:treat
 \end{aligned}
 $$
 
@@ -435,8 +444,6 @@ model_sum <- summary(full_model)
 
 ```
 
-\hfill\break
-
 ### Model Summary & CI
 
 
@@ -457,14 +464,11 @@ xtable(tdf, caption = "Deviance")
 
 ```
 
-\hfill\break
-
-
 ### Model Verification
 
 #### Residuals
 
-```{r echo = FALSE, results='asis', out.width=c('30%', '30%', '30%'),  out.height='30%'}
+```{r echo = FALSE, results='asis', out.width=c('30%', '30%', '30%'),  out.height='25%'}
 
 binnedplot(
   x = fitted(full_model),
@@ -502,9 +506,10 @@ binnedplot(
 
 #### Deviance
 
-Null model deviance : `r round(model_sum$null.deviance,2)`
 
-Final model deviance : `r round(model_sum$deviance,2)`
+- Null model deviance : `r round(model_sum$null.deviance,2)`
+
+- Final model deviance : `r round(model_sum$deviance,2)`
 
 - The decrease of deviance indicates that the model is valid.
 
@@ -515,7 +520,7 @@ Final model deviance : `r round(model_sum$deviance,2)`
 #### Collinearity
 
 
-```{r echo = FALSE, results='asis', message=FALSE}
+```{r echo = FALSE, fig.show='hold', results='asis', message=FALSE}
 
 xtable(tidy(vif(full_model)), caption = "VIF")
 
@@ -528,9 +533,6 @@ xtable(tidy(vif(full_model)), caption = "VIF")
 Various indicators point out that the final model is valid and can be used to answer the questions  about the dataset. 
 
 ### Model Assessment
-
-#### Confusion Matrix
-
 
 ```{r echo = FALSE, results='asis', message=FALSE}
 
@@ -554,7 +556,7 @@ xtable(Conf_mat$table, caption = "Confusion Matrix")
 
 #### ROC
 
-```{r echo = FALSE, results='asis', fig.align='center', message=FALSE,  out.height='30%'}
+```{r echo = FALSE, results='asis', fig.align='center', message=FALSE,  out.height='25%'}
 
 
 cutoff = "best"
@@ -608,7 +610,7 @@ roc_value <-coords(roc, cutoff, transpose = FALSE)
 # Appendix II (Part2 R Code)
 
 ````
-`r paste(readLines('Part 2_v3.R'), collapse = '\n')`
+`r paste(readLines('Part 2.R'), collapse = '\n')`
 ````
 
 
