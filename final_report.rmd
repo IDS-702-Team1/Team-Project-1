@@ -31,11 +31,13 @@ library(caret)
 require(gridExtra)
 library(MASS)
 library(arm)
+library(dplyr)
+library(tidyr)
 
 ###### Load the data
 lalondedata <-
   read.table(
-    "lalondedata.csv",
+    "lalondedata.txt",
     header = TRUE,
     sep = ",",
     colClasses = c(
@@ -65,8 +67,6 @@ lalondedata$educc2 <- lalondedata$educc ^ 2
 
 ```
 
-# Part I
-
 ## Summary
 
 Through this report we try to analyze the impact of a training program by gauging its effect on the real annual earnings and through its likeliness to help the participants earn a non-zero wage. To do so, we use  linear  and logitic regression models  respectively. We use a dataset from the National Supported Work (NSW) Demonstration (1975-1978) for the same and build models using the AIC/BIC criterion based on the statistical significance and reasonableness. We then find out that ......have significant association with annual incomes suggesting that taking the training might be an important factor associated with increase in wages. Also, We find that non-zero wages are associated with ...... suggesting that training is not a very significant factor associated with non-zero wages. Thus, it can be understood that training program as a factor does not seem to have a very strong association with improvement in wages or by providing a source of earning.
@@ -91,6 +91,8 @@ Part II: Is there evidence that workers who receive job training tend to be more
 To understand this question we need to quantify the effect of the treatment, that is, receiving job training, on the odds of having non-zero wages and what would be the likely range for the effect of training. We also need to see if there is any evidence that the effects differ by demographic groups and also if there are other interesting associations with positive wages.
 
 These questions would help us understand the potential association of the impact of the training program on the wages. To answer these questions the report uses a linear regression on the differences in wages and a logistic regression model on the odds of getting a non-zero wage after the training. It begins with an EDA of the data, tries building a model by exploring models built with the help of AIC and BIC criteria using forward and stepwise model building and chooses the most suitable model on the basis of accuracy and plausibility to answer the above questions.
+
+# PART I
 
 ## DATA & EDA 
 
@@ -143,11 +145,10 @@ ggplot(lalondedata, aes(x = age, y = diff)) +
 
 ### Multicollinearity
 
-Intuitively, education duration has a strong correlation with a high school degree.  In this dataset, the correlation of the two variables is `r cor(as.numeric(lalondedata$nodegree), lalondedata$educ)` which suggests that we could not include both of them in our model. After evaluation, education duration was preserved since it can provide more information than the high school degree variable.
+Intuitively, education duration has a strong correlation with a high school degree.  In this dataset, the correlation of the two variables is `r round(cor(as.numeric(lalondedata$nodegree), lalondedata$educ), 2)` which suggests that we could not include both of them in our model. After evaluation, education duration was preserved since it can provide more information than the high school degree variable.
 
 
 ### Interactions 
-
 
 
 ```{r, echo=FALSE,  fig.show='hold', out.height='20%', fig.align='center' , message=FALSE}
@@ -162,7 +163,7 @@ ggplot(lalondedata, aes(x = age, y = diff)) +
 
 ```
 
-
+- The annual earnings trend with the increase of age is different according to treat. Further investigation of this interaction would be exerted in the model fitting step.
 
 ## Model
 
@@ -189,13 +190,9 @@ $$
 
 - educc: Centred educ
 
-\hfill\break
-
 ### Model Summary & CI
 
-\hfill\break
-
-```{r echo = FALSE, results='asis', hold_position=TRUE}
+```{r echo = FALSE, results='asis' ,  fig.show='hold'}
 
 final_model <-
   lm(
@@ -206,8 +203,11 @@ final_model <-
 
 fsta <- summary(final_model)$fstatistic
 model_pvalue <- pf(fsta[1],fsta[2],fsta[3],lower.tail=F)
+```
 
-xtable(final_model, caption = "Coefficients")
+```{r echo = FALSE, results='asis',  fig.show='hold'}
+xtable(final_model, 
+      caption = "Coefficient-Level Estimates")
 
 tdf <- data.frame(
     pValue = formatC(model_pvalue, format = "e", digits = 2),
@@ -219,6 +219,8 @@ xtable(tdf, caption = "Evaluationl")
 xtable(confint(final_model), caption = "Confidence Interval")
 
 ```
+
+
 \hfill\break
 
 ### Model Verification 
@@ -269,10 +271,9 @@ There are some outliers and high leverage points; however, there are not high in
 #### Collinearity 
 
 \hfill\break
-```{r echo = FALSE, results='asis', message=FALSE, hold_position=TRUE}
+```{r echo = FALSE, results='asis', message=FALSE}
 
-
-xtable(tidy(vif(final_model)))
+xtable(tidy(vif(final_model)), caption = "VIF")
 
 ```
 
@@ -304,12 +305,6 @@ xtable(tidy(vif(final_model)))
 
 # Part II
 
-## Summary
-
-
-
-## Introduction
-
 ## DATA & EDA
 
 ```{r, echo=FALSE, message=FALSE}
@@ -318,7 +313,7 @@ rm(list = ls())
 
 lalondedata <-
   read.table(
-    "lalondedata.csv",
+    "lalondedata.txt",
     header = TRUE,
     sep = ",",
     colClasses = c(
@@ -353,57 +348,99 @@ lalondedata$agec2 <- lalondedata$agec ^ 2
 ```
 
 
-###  Response Variable
-
-
-
-### Predict Vraibles
-
-
-
-### Multicollinearity
-
-
 ### Interactions
 
+```{r echo = FALSE, results='asis', out.width=c('50%', '50%'),  out.height='30%'}
+
+ggplot(lalondedata, aes(x = earnf, y = age, fill = earnf)) +
+  geom_boxplot() + coord_flip() +
+  scale_fill_brewer(palette = "Reds") +
+  labs(title = "Had salaries or not vs Age by Treat",
+       x = "Had salaries or no?", y = "Age") +
+  theme_classic() + theme(legend.position = "none") +
+  facet_wrap(~ treat)
+
+ggplot(lalondedata, aes(x = earnf, y = age, fill = earnf)) +
+  geom_boxplot() + coord_flip() +
+  scale_fill_brewer(palette = "Reds") +
+  labs(title = "Had salaries or not vs Age by High school degree",
+       x = "Had salaries or no?", y = "Age") +
+  theme_classic() + theme(legend.position = "none") +
+  facet_wrap(~ nodegree)
+
+```
+
+- As reported by the first plots (left), the role of age in the employment rate is different according to whether the works take job training or not. 
+
+- The second plot points out that the role of age in employment rate is also influenced by whether the works have a high school degree or not.
+
+
+```{r echo = FALSE, results='asis', message=FALSE}
+
+hispan0<-lalondedata %>%
+  filter(hispan==0)
+hispan1<-lalondedata %>%
+  filter(hispan==1)
+
+non_hispan_marriage <- apply(table(hispan0[,c("earnf","married")])/sum(table(hispan0[,c("earnf","married")])), 2,function(x) round(x/sum(x), 2))
+hispan_marriage <- apply(table(hispan1[,c("earnf","married")])/sum(table(hispan1[,c("earnf","married")])), 2,function(x) round(x/sum(x),2))
+
+xtable(non_hispan_marriage, caption = "Employed rate with marital status - Non Hispanic")
+xtable(hispan_marriage, caption = "Employed rate with marital status - Hispanic")
+
+```
+
+- The two tables show some differences in the relationship between marital status and employment rate according to race. For the Hispanic works, the single workers' unemployment rate is obviously lower than single workers of other races (8% vs. 26%). At the same time, this advantage disappears in the married Hispanic workers. The married Hispanic workers' unemployment rate is 28%, while Non-Hispanic races' married unemployment rate is 21%. This interesting sign of interaction would be further investigated in the model fitting. 
 
 ## Model
 
-
 ### Model selection
+
+1. By AIC forward-searching, we find a square transform of "age" is significant in the model. After verification with ANOVA test, we decide to keep this transformation in the final model
+
+2. The interactions between "age" and "married" and "degree" were confirmed by the p-value. Even though the p-value is "married" and "treat" not strong significant, the ANOVA test tips it means full. 
+
+3. The interaction between "hispan1" and "married" was confirmed, and its p-value is significant.
+
+4. Tread was not significant in our final model. However, it is a key predictor variable for answering the question. Hence, we preserve it in our final model. 
+
 
 ### Final model
 
 
 $$
 \begin{aligned}
-logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat + \beta_{2}*black + \beta_{3}*hispan + \\                                     &\beta_{4}*agec + \beta_{5}*agec^2 + \beta_{6}*nodegree + \beta_{7}*married + \\
-                 &\beta_{8}*agec:treat + beta_{9}*black:treat +\\
-                 &\beta_{10}*hispan:treat + \beta_{11}*hispan:married
+logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat + \beta_{2}*black + \beta_{3}*agec + \beta_{4}*agec^2 + \\                   &\beta_{5}*nodegree + \beta_{6}*hispan + \beta_{7}*married + \\
+                 &\beta_{8}*agec:nodegree + \beta_{9}*hispan:married + \beta_{10}*agec:treat
 \end{aligned}
 $$
+
+- agec: Centred age
 
 ```{r, echo=FALSE, message=FALSE}
 
 full_model <-
   glm(
-    earn ~ treat * (black + hispan + agec) + agec2 + nodegree + married + agec:nodegree + hispan:married,
+    earn ~ treat + black + agec + agec2  
+           + nodegree + hispan + married 
+           + nodegree:agec + hispan:married + agec:treat,
+    
     data = lalondedata,
     family = binomial
   )
 
-res1 <- residuals(full_model,"resp")
+rawresid <- residuals(full_model,"resp")
 
 model_sum <- summary(full_model)
 
 ```
 
-
+\hfill\break
 
 ### Model Summary & CI
 
 
-```{r echo = FALSE, results='asis'}
+```{r echo = FALSE, results='asis', message=FALSE}
 
 xtable(model_sum, caption = "Coefficients")
  
@@ -411,24 +448,65 @@ model_confint <- confint(full_model)
 
 xtable(model_confint, caption = "Confidence Interval")
 
- 
 tdf <- data.frame(
-    NULL_deviance = round(model_sum$null.deviance,2),
-    Residual_deviance = round(model_sum$deviance,2)
+    NULL_deviance = round(model_sum$null.deviance, 2),
+    Residual_deviance = round(model_sum$deviance, 2)
 )
 
-xtable(tdf, caption = "Evaluationl")
+xtable(tdf, caption = "Deviance")
 
 ```
 
 \hfill\break
 
 
- 
 ### Model Verification
 
-
 #### Residuals
+
+```{r echo = FALSE, results='asis', out.width=c('30%', '30%', '30%'),  out.height='30%'}
+
+binnedplot(
+  x = fitted(full_model),
+  y = rawresid,
+  xlab = "Pred. probabilities",
+  col.int = "red4",
+  ylab = "Avg. residuals",
+  main = "Binned residual plot",
+  col.pts = "navy"
+)
+
+binnedplot(
+  x = lalondedata$agec,
+  y = rawresid,
+  xlab = "Age (Centered)",
+  col.int = "red4",
+  ylab = "Avg. residuals",
+  main = "Binned residual plot",
+  col.pts = "navy"
+)
+
+binnedplot(
+  x = lalondedata$educc,
+  y = rawresid,
+  xlab = "Education (Centered)",
+  col.int = "red4",
+  ylab = "Avg. residuals",
+  main = "Binned residual plot",
+  col.pts = "navy"
+)
+
+```
+
+- According to the binnedplots, about 95% points reside inside the red bend. It is a strong justification for the model’s efficiency.  
+
+#### Deviance
+
+Null model deviance : `r round(model_sum$null.deviance,2)`
+
+Final model deviance : `r round(model_sum$deviance,2)`
+
+- The decrease of deviance indicates that the model is valid.
 
 
 #### Outliers and High Leverage
@@ -437,13 +515,101 @@ xtable(tdf, caption = "Evaluationl")
 #### Collinearity
 
 
+```{r echo = FALSE, results='asis', message=FALSE}
+
+xtable(tidy(vif(full_model)), caption = "VIF")
+
+```
+
+- According to the table, all item's VIF value are below 10.  Hence, there is no remarkable collinearity in this model. 
+
+#### Summary 
+
+Various indicators point out that the final model is valid and can be used to answer the questions  about the dataset. 
+
+### Model Assessment
+
+#### Confusion Matrix
+
+
+```{r echo = FALSE, results='asis', message=FALSE}
+
+Conf_mat <-
+  confusionMatrix(as.factor(ifelse(
+    fitted(full_model) >= mean(lalondedata$earn), "1", "0"
+  )),
+  as.factor(lalondedata$earn), positive = "1")
+
+                
+xtable(Conf_mat$table, caption = "Confusion Matrix")
+
+```
+
+- Sensitivity : `r round(Conf_mat$byClass[c("Sensitivity")], 2)`
+
+- Specificity : `r round(Conf_mat$byClass[c("Specificity")], 2)`
+
+- Accuracy : `r Conf_mat$overall["Accuracy"]`
+
+
+#### ROC
+
+```{r echo = FALSE, results='asis', fig.align='center', message=FALSE,  out.height='30%'}
+
+
+cutoff = "best"
+
+roc <- roc(lalondedata$earn,
+           fitted(full_model),
+           plot=T,
+           print.thres=cutoff,
+           legacy.axes=T, 
+           col="blue2")
+
+roc_value <-coords(roc, cutoff, transpose = FALSE)
+
+```
+
+- AUC: `r round(roc$auc, 2)`
+
+- Cut-off: `r round(roc_value[1], 2)`
+
 ## Conclusion
+
+- Since the treat's p-value is not significant, receiving job training would not directly influence the odds of these worker's positive wages. However, the interaction item "treat1:agec" is relatively significant. 
+
+- Some other factors would influence a worker's odds of getting positive wages.
+
+1. Race of black. For a black worker, his/her odds of getting a job are 41% lower than a non-black worker under the same other conditions. 
+
+2. Race of Hispanic and marital status. Controlling other factors, a Hispanic worker's odd to be employed is 231% higher than others. However, the effect would bring down by being married. A married Hispanic worker's odds of getting a job are 45% lower than others under the same conditions. 
+
+3. Age. Age is a complex factor in our model. Generally speaking, aging would increase these workers' odds of being jobless. Taking the job training may slow down the trends. 
 
 
 ## Deficiency
 
+- The effect of age is hard to interpret because it involves square transformation and interaction with treat. Moreover, their significants are not strong enough. This would cause the model to become less convincing.
+
+- Sensitivity and accuracy are relatively low. 
+
+- Data on the long term effect of training is missing in this dataset. Intuitively, job training would exert its influence on people's work in the long run. However, it can not be verified in this analysis. 
+
+\newpage
+# Appendix I (Part1 R Code)
 
 
+````
+`r paste(readLines('Part 1.R'), collapse = '\n')`
+````
+
+
+\newpage
+# Appendix II (Part1 R Code)
+
+````
+`r paste(readLines('Part 2_v3.R'), collapse = '\n')`
+````
 
 
 
