@@ -6,13 +6,12 @@ author:
     - Xinyi Pan        (Programmer)
     - Maobin Guo       (Writer)
 output:
-  pdf_document:
-    fig_caption: yes
-    keep_tex: yes
+  pdf_document: default
+  word_document: default
   html_document:
     
+    
     df_print: paged
-  word_document: default
 ---
 
 ```{r, echo=FALSE, include=FALSE, message=FALSE}
@@ -128,7 +127,7 @@ It is observed the variable age shows a slightly decreasing linear relationship 
 
 
 
-```{r, echo=FALSE, out.width=c('50%', '50%'), out.height='20%', fig.show='hold', message=FALSE}
+```{r, echo=FALSE, out.width=c('50%', '50%'), out.height='20%', fig.show='hold', fig.align='center',message=FALSE}
 
 # educ
 ggplot(lalondedata, aes(x = educ, y = diff)) +
@@ -196,13 +195,14 @@ Intuitively, education duration has a strong correlation with a high school degr
 
 $$
 \begin{aligned}
-diff_{i} = &\beta_{0} + \beta_{1}*black_{i} + \beta_{2}*hispan_{i} + \beta_{3}*agec_{i} + \beta_{4}*married_{i} + \beta_{5}*treat_{i}:agec_{i} + \\ 
-                 & \beta_{6}*educc_{i} + \beta_{7}*educc_{i}^2 + \beta_{8}agec:married_{i} + \varepsilon_{i} ;\varepsilon \overset{iid}{\sim} \mathcal{N}(\mu,\,\sigma^{2})\
+diff_{i} = &\beta_{0} + \beta_{1}*black_{i} + \beta_{2}*hispan_{i} + \beta_{3}*agec_{i} + \\ 
+                 &\beta_{4}*married_{i} + \beta_{5}*treat_{i}:agec_{i} + \beta_{6}*educc_{i} + \\
+                 &\beta_{7}*educc_{i}^2 + \beta_{8}agec:married_{i} + \varepsilon_{i}
 \end{aligned}
 $$
 
 
-### Model Summary
+### Model Summary & CI
 
 ```{r echo = FALSE, results='asis' ,  fig.show='hold'}
 
@@ -232,7 +232,16 @@ xtable(tdf, caption = "Evaluationl")
 
 ```
 
-From the above, we find that ………. Are strongly associated with the differences in wages. Further at a level of significance, it can be observed that …. Increase or decrease . with ….. Keeping other variables constant.
+The baseline values incorporated in the intercept are treat=0,black=0,hispan=0,age= 27, and married=0. 
+From the above model summary, we find that treat, agec, married, educc2 (square term of education) and the interactions of age and treat along with age and married are strongly associated (statistically significant) with the differences in wages. Keeping other variables constant,
+1. If the participant takes part in the training program, their annual earning is likely to increase by $813.5
+2. A unit increase of age from the mean value (27 years) tend to decrease the annual earnings by $55.02
+3. If the participant is married, his annual earnings tend to decrease by $469.90
+
+(INTERPRET EDUC^2 and INTERACTION terms)
+
+
+Further at a level of significance, it can be observed that …. Increase or decrease . with ….. Keeping other variables constant.
 
 From the above, we find that treat is significant at level …… And the likely range of wage difference is ….. This suggests that training does have an association with higher wages. 
 
@@ -286,7 +295,7 @@ plot(final_model, which=5, main = "Cook's Distance Analysis")
 **Summary:** 
 There are some outliers and high leverage points; however, there are not high influence data. Hence, these data points can be preserved in the model without worry. 
 
-#### Colineary 
+#### Collinearity 
 
 \hfill\break
 ```{r echo = FALSE, results='asis', message=FALSE}
@@ -319,7 +328,7 @@ xtable(tidy(vif(final_model)), caption = "VIF")
 2. Some outliers deserve further investigation. 
 
 
-
+\newpage
 
 # Part II
 
@@ -425,20 +434,24 @@ We also observe through the two tables shown that there are some differences in 
 
 Based on the above trends, we build a logistic regression model using the AIC forward model selection method. For doing so we construct our 
 Null Model as:
+logit(πi)=β0+β1∗treat
+
+Full Model as:
+logit(πi)=β0+(β1ageci+β2educci+β3treati+β4blacki+β5hispani+β6marriedi+β7nodegreei)2+β8∗ageic2+εi [^ A number of extra variables are considered to understand their role in the model and get to the most significant variables among these.]
+
+
+1. On the basis of the above, the logistic regression model is developed after considering the stepwise and forward built models using the AIC criteria and then selected. The Null Model used is :
 $$
 \begin{aligned}
 logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat_{i} + \beta_{2}*black_{i} + \beta_{3}*agec_{i} + \beta_{4}*agec_{i}^2 + \varepsilon_{i}
 \end{aligned}
 $$
-
-Full Model as:
+and the Full Model used is:
 $$
 \begin{aligned}
 logit(\pi_{i}) = &\beta_{0} + (\beta_{1}agec_{i} + \beta_{2}educc_{i} + \beta_{3}treat_{i} + \beta_{4}black_{i} + \beta_{5}hispan_{i} + \beta_{6}married_{i} + \beta_{7}nodegree_{i})^2+ \\ &\beta_{8}*age_{i}c^2 + \varepsilon_{i}
 \end{aligned}
 $$
-
-
 
 
 
@@ -477,7 +490,7 @@ model_sum <- summary(full_model)
 
 ```
 
-### Model Summary
+### Model Summary & CI
 
 
 ```{r echo = FALSE, results='asis', message=FALSE}
@@ -511,7 +524,7 @@ Keeping other variables constant,
 
 #### Residuals
 
-```{r echo = FALSE, results='asis',  out.height='30%'}
+```{r echo = FALSE, results='asis', out.width=c('30%', '30%', '30%'), fig.align='center', out.height='25%'}
 
 binnedplot(
   x = fitted(full_model),
@@ -523,25 +536,26 @@ binnedplot(
   col.pts = "navy"
 )
 
-#binnedplot(
-#  x = lalondedata$agec,
-#  y = rawresid,
-#  xlab = "Age (Centered)",
-#  col.int = "red4",
-#  ylab = "Avg. residuals",
-#  main = "Binned residual plot",
-#  col.pts = "navy"
-#)
+#####
+binnedplot(
+  x = lalondedata$agec,
+  y = rawresid,
+  xlab = "Age (Centered)",
+  col.int = "red4",
+  ylab = "Avg. residuals",
+  main = "Binned residual plot",
+  col.pts = "navy"
+)
 
-#binnedplot(
-#  x = lalondedata$educc,
-#  y = rawresid,
-#  xlab = "Education (Centered)",
-#  col.int = "red4",
-#  ylab = "Avg. residuals",
-#  main = "Binned residual plot",
-#  col.pts = "navy"
-#)
+binnedplot(
+  x = lalondedata$educc,
+  y = rawresid,
+  xlab = "Education (Centered)",
+  col.int = "red4",
+  ylab = "Avg. residuals",
+  main = "Binned residual plot",
+  col.pts = "navy"
+)
 
 ```
 
@@ -551,21 +565,19 @@ Null model deviance : 666.5
 Final model deviance : 627.54
 The decrease of deviance indicates that the model is valid.
 
-#### Colineary
 
+#### Collinearity
+
+
+```{r echo = FALSE, fig.show='hold', results='asis', message=FALSE}
+
+xtable(tidy(vif(full_model)), caption = "VIF")
+
+```
 
 According to the table, most of the VIF values for the predictors are below 5, indicating moderately correlated. However, age centered seems to have a VIF value of 6.8, indicating high correlation. 
 
-```{r echo = FALSE, results='asis', message=FALSE}
-xtable(tidy(vif(full_model)), caption = "VIF")
-```
-
-\hfill\break
-\hfill\break
-\hfill\break
-
 #### Summary 
-
 
 Various indicators point out that the final model is valid and can be used to answer the questions  about the dataset. 
 
@@ -585,13 +597,17 @@ xtable(Conf_mat$table, caption = "Confusion Matrix")
 ```
 
 
-The Sensitivity value, also known as true positive rate $\frac{TP}{TP+FN}$ of the model is 0.59.
+The Sensitivity value, also known as true positive rate (TP/TP+FN){Latex} of the model is 0.59.
 
-The Specificity value, also known as true negative rate $\frac{TN}{FP+TN}$ of the model is  0.64
+The Specificity value, also known as true negative rate (TN/FP+TN){Latex} of the model is  0.64
 
-The Accuracy $\frac{TP+TN}{TP+TN+FP+FN}$ of the model is 0.60, 60%.
+The Accuracy (TP+TN/TP+TN+FP+FN) {Latex}of the model is 0.60, 60%.
+
+
+#### ROC
 
 ```{r echo = FALSE, results='asis', fig.align='center', message=FALSE,  out.height='25%'}
+
 
 cutoff = "best"
 
@@ -612,7 +628,7 @@ Discussion
 
 1. Is there evidence that workers who receive job training tend to be more likely to have positive (non-zero) wages than workers who do not receive job training? Quantify the effect of the treatment, that is, receiving job training, on the odds of having non-zero wages.LIMITS
 
-According to the model, the variable treat is not statistically significant as it has a p value greater than 0.05. Hence receiving job training would not directly influence the odds of these worker’s positive wages and cannot quantify the effect of treatment on the odds of having non-zero wages. However, the interaction item “treat1:agec” is relatively significant. 
+According to the model, the variable treat is not statistically significant as it has a p value greater than 0.05. Hence receiving job training would not directly influence the odds of these worker’s positive wages and cannot quantify the effect of treatment on the odds of having non-zero wages. However, the interaction item “treat1:agec” is relatively significant. {talk later}
 
 
 3) Is there any evidence that the effects differ by demographic groups?
