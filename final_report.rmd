@@ -71,15 +71,9 @@ lalondedata$educc2 <- lalondedata$educc ^ 2
 
 ## Summary
 
-Through this report we try to analyze the impact of a training program by gauging its effect on the real annual earnings and its likeliness to help the participants earn a non-zero wage. To do so, we use  linear  and logitic regression models  respectively. We use a dataset from the National Supported Work (NSW) Demonstration (1975-1978) for the same and build models using the AIC Forward criterion based on the statistical significance and reasonableness. We then find out that the varaibles treat(taking training), age, marital status, education,age given marital status and age given training have significant association with annual incomes suggesting that taking the training might be a very important factor associated with increase in wages. Also, We find that non-zero wages are associated with race, age, marital status, race given marital status, age given nodegree and age given training suggesting that training is not a very significant factor associated with non-zero wages by itself. Thus, it can be understood that training program as a factor does seem to have a very strong association with increase in wages. However, it is also found that it does not have much association with employment and is associated with other demographic factors and educational qualification.
-
-For detailed information on this research, please check the following papers.
+Through this report we try to analyze the impact of a training program by gauging its effect on the real annual earnings and its likeliness to help the participants earn a non-zero wage. To do so, we use  linear  and logitic regression models  respectively. We use a dataset from the National Supported Work (NSW) Demonstration (1975-1978)[^1][^2] for the same and build models using the AIC Forward criterion based on the statistical significance and reasonableness. We then find out that the variables treat(taking training), age, marital status, education,age given marital status and age given training have significant association with annual incomes suggesting that taking the training might be a very important factor associated with increase in wages. Also, We find that non-zero wages are associated with race, age, marital status, race given marital status, age given nodegree and age given training suggesting that training is not a very significant factor associated with non-zero wages by itself. Thus, it can be understood that training program as a factor does seem to have a very strong association with increase in wages. However, it is also found that it does not have much association with employment and is associated with other demographic factors and educational qualification.
 
 
-- [Paper 1](https://www.jstor.org/tc/accept?origin=%2Fstable%2Fpdf%2F1806062.pdf)
-
-
-- [Paper 2](https://uh.edu/~adkugler/Dehejia&Wahba_JASA.pdf)
 
 
 ## Introduction
@@ -87,11 +81,13 @@ For detailed information on this research, please check the following papers.
 In the 1970s, researchers in the United States ran several randomized experiments to evaluate public policy programs. One of the most famous experiments was the National Supported Work (NSW) Demonstration, in which researchers wanted to assess whether or not job training for disadvantaged workers had an effect on their wages. Based on a subset of this dataset, in order to understand the impact of the training program, we need to look at two main questions:
 Part I: Is there evidence that workers who receive job training tend to earn higher wages than workers who do not receive job training?
 To address this question we need to look at quantifying the effect of the treatment, that is, receiving job training, on real annual earnings and understanding the likely range for the effect of training. We also need to check if there is any evidence that the effects differ by demographic groups and if there are other interesting associations with wages.
+
+
 Part II: Is there evidence that workers who receive job training tend to be more likely to have positive (non-zero) wages than workers who do not receive job training?
 To understand this question we need to quantify the effect of the treatment, that is, receiving job training, on the odds of having non-zero wages and what would be the likely range for the effect of training. We also need to see if there is any evidence that the effects differ by demographic groups and also if there are other interesting associations with positive wages.
 These questions would help us understand the potential association of the impact of the training program on the wages. To answer these questions the report uses a linear regression on the differences in wages and a logistic regression model on the odds of getting a non-zero wage after the training. It begins with an EDA of the data, tries building a model by exploring models built with the help of AIC criteria using forward model building and chooses the most suitable model on the basis of accuracy and plausibility to answer the above questions.
 
-# PART I
+# Part I
 
 ## DATA
 
@@ -100,7 +96,7 @@ We converted treat, black, hispan, married, nodegree into binary factor variable
 
 ### Exploratory Data Analysis
 
-We initially noticed that re78 was not normally distributed so that could not be used as the response variable. The difference between re78 and re74 seemed to portray more characteristics of normal distribution hence we have taken this difference as the model’s response variable. 
+We initially noticed that re78 was not normally distributed so that it could not be used as the response variable. The difference between re78 and re74 seemed to portray more characteristics of normal distribution hence we have taken this difference as the model’s response variable. 
 
 ```{r, echo=FALSE, out.height='20%', fig.align='center', fig.show='hold'}
 
@@ -121,7 +117,7 @@ ggplot(lalondedata, aes(x = diff)) +
 
 ```
 
-It is observed the variable age shows a slightly decreasing linear relationship with the wage differences, while variable education shows a non-linear trend. Further, we also see that categorical variables treat, black, hispan and married seem to show some differences based on the categories. We then look into the interactions and find that the association between wage differences and treat seems to differ by age; while one has an increasing trend the other has a decreasing trend. The trend between the two also shows differences by races , educ and married. We also find that trends between the wage differences and education differ by married. This is also found so for the age variable to differ by married.
+We observed that the variable "age" shows a slightly decreasing linear relationship with the wage differences, while variable education shows a non-linear trend. Further, we also see that categorical variables treat, black, hispan and married seem to show some differences based on the categories. We then look into the interactions and find that the association between wage differences and treat seems to differ by age; while one has an increasing trend the other has a decreasing trend. The trend between the two also shows differences by races , educ and married. We also find that trends between the wage differences and education differ by married. This is also found so for the age variable to differ by married.
 
 
 
@@ -167,20 +163,19 @@ The plot above illustrates the interaction between age and treat with the respon
 
 ### Model selection
 
-Based on these, we try building a model using the AIC forward/ BIC and selecting the model. 
+Based on these, we try building a model using the AIC forward and selecting the model. 
 
-Null Model contained only the treat variable while the full model contained all the predictors along with its interactions. The null model has an AIC value of 12771.89 while the full model has an AIC value of 12764.68. 
+Null Model contains only the treat variable while the full model contains all the predictors along with its interactions. The null model has an AIC value of 12771.89 while the full model has an AIC value of 12764.68. 
 
 The output of Forward AIC model is:
 
-diff ~ treat + agec + married + educc2 + treat:agec + 
-    agec:married
+*diff ~ treat + agec + married + educc2 + treat:agec +  agec:married*
 
 Where agec - age centered variable and educc - education centered variable.
 
 The AIC model contains the variables, treat, agec, married, educc2 (squared term of educ) along with the interaction between treat & agec and agec & married.
 
-On comparing the model to the Null Model and Full Model, we find that the above model is more statistically significant (p-value: 6.668e-07 (null) and p-value:0.3817 (full)). Further, we test excluding and including some variables and found this to indeed be the most statistically significant one. However, we add the variables black and hispan as is required for analysing the question of interest. We also add the variable educc as we retain its second order term [^Shows a significant p-value for the dataset.]
+On comparing the model to the Null Model and Full Model, we find that the above model is more statistically significant (p-value: 6.668e-07 (null) and p-value:0.3817 (full)). Further, we test excluding and including some variables and found this to indeed be the most statistically significant one. However, we add the variables black and hispan as is required for analysing the question of interest. We also add the variable educc as we retain its second order term. 
 
 Interaction between "married" and "age" was found in this step. It's p-Value is slightly above 0.05, but it small than 0.1. The ANOVA test also indicates that it would improve our model significantly. Hence it was preserved in our final model. 
 
@@ -229,10 +224,14 @@ xtable(confint(final_model), caption = "Confidence Interval")
 
 ```
 
-The baseline values incorporated in the intercept are treat=0,black=0,hispan = 0,age = 27, and married=0. 
-From the above model summary, we find that treat, agec, married, educc2 (square term of education) and the interactions of age and treat are strongly associated (statistically significant) with the differences in wages at the 0.05 level. The interaction between age and married is significant at the 0.1 significance level. With demographic factor, we notice that race (black or hispanic) is not significant with the difference in wages, p value greater than 0.05. Keeping other variables constant,
+The baseline values incorporated in the intercept are treat=0,black=0,hispan = 0,age = 27, and married=0. Keeping other things constant, for an unmarried, non-black, non-hispanic, non-trainee, with an age of about 27, and education o about 10 years would earn 1743$.
+
+From the above model summary, we find that treat, agec, married, educc2 (square term of education) and the interactions of age and treat are strongly associated (statistically significant) with the differences in wages at the 0.05 level. The interaction between age and married is significant at the 0.1 significance level. With demographic factor, we notice that race (black or hispanic) is not significant with the difference in wages, p value greater than 0.05.  
+
 1. Controlling other factors, if the participant takes part in the training program, their annual earning is likely to increase by $3254.1 on average (p<0.001). The likely range of this value is ($1516.63 $4991.57)
+
 2. Controlling other factors, a unit increase of age from the mean value (27 years) tend to decrease the annual earnings by $220.1 (p<0.0001). The likely range of it is (-$322.99 -$117.20)
+
 3. Controlling other factors, if the participant is married, his annual earnings tend to decrease by $1879.6 (p=0.01). The likely range of it is (-$3307.36 -$451.84)
 
 
@@ -243,19 +242,24 @@ From the above model summary, we find that treat, agec, married, educc2 (square 
 
 #### Residuals
 
-```{r echo = FALSE, out.width=c('50%', '50%'), out.height='20%', fig.align='center', fig.show='hold'}
+```{r echo = FALSE, fig.align='center',  fig.show='hold', out.height='30%'}
 
-plot(final_model, which=1)
-plot(final_model, which=3)
+#plot(final_model, which=1)
+#plot(final_model, which=3)
+par(mfrow = c(2, 2))
+p3<-plot(lalondedata$agec,final_model$residuals, col=c("blue"), xlab = "Age", ylab = "Model Residual")
+p4<-plot(final_model,which=2,col=c("yellowgreen"),pch=16)
+p5<-plot(final_model,which=1,col=c("orange"),pch=16)
+p6<-plot(final_model,which=5,col=c("thistle1"),pch=16)
 
 ```
 
-- The residuals are scattered randomly; there is no apparent trend in the plots.
-- The error is no correlation of error terms in the plot.
-- The variance of the error is constant, there is no apparent change along the x-axis. 
+From the residual plots, there are no violations of assumptions:
 
-**Summary:** 
-According to residual analysis, there is no obvious evidence indicate the assumptions of linear regression were broken. 
+1) Linearity: The residual versus predictor plot seems random for the temp_median_c predictor variable, while the other predictors are categorical.
+2) Independence and Equal Variance: Absence of any pattern, randomness and wide-spread distributions over the spectrum support these assumptions.
+3) QQ-plot supports the assumption of Normality generally as the plot is a straight line. 
+
 
 #### Outliers and High Leverage
 
@@ -277,12 +281,8 @@ plot(final_model, which=5, main = "Cook's Distance Analysis")
 
 ```
 
-- There are a few outliers under this model.
-- There are some high leverage points. 
-- According to cook's distance, there is no high influence points (> 0.5).
-
 **Summary:** 
-There are some outliers and high leverage points; however, there are not high influence data. Hence, these data points can be preserved in the model without worry. 
+There are a few outliers and some high leverage points in model, however according to cook's distance they are not high influence points. And the model does not improve even after removing the outliers and hence we have not removed these points from the model.
 
 #### Colineary 
 
@@ -297,20 +297,20 @@ xtable(tidy(vif(final_model)), caption = "VIF")
 
 ## Conclusion
 
-1. Tread has positive effects on workers' annual salary because its p-value is significant. Controlling other factors, taking job training would increase $3254 on annual salary on average. It's 95% CI  is (1516, 4991)
+1. Treat has positive effects on workers' annual salary because its p-value is significant. Controlling other factors, taking job training would increase $3254 on annual salary on average. It's 95% CI  is ($1516, $4991)
 
 2. The effect varies by age. The interaction of treat and age is significant in our model. Workers who received training would receive $124 per year for per 1-year increase in age, while the no-training workers' salary would decrease by $322 per year for per 1-year increase in age.
 
 3. Other interesting associations with wages:
 
-- Marriage would significantly bring down workers' annual salary by $1879 (95% CI is 452, 3307)
+- Marriage would significantly bring down workers' annual salary by $1879 (95% CI is $452, $3307)
 
-- Education duration would increase workers' salaries. For 1 unit increase for its square, the annual salary would increase by $55 (95% CI: 3, 108) 
+- Education duration would increase workers' salaries. For 1 unit increase for its square, the annual salary would increase by $55 (95% CI: $3, $108) 
 
-- Age and married have weak interaction. Controlled other factors, for the married workers, while the old ones would receive more salary. One year increase on age would raise the workers' salary by $137 per year (95% CI: -2, 278)
+- Age and married have weak interaction. Controlled other factors, for the married workers, while the old ones would receive more salary. One year increase on age would raise the workers' salary by $137 per year (95% CI: -$2, $278)
 
 
-## Deficiency
+## Limitation
 
 1. The final model's R-squared is only 0.088, which is relatively low. 
 
@@ -655,7 +655,12 @@ The ratio of hispanics to non-hispanics
 ````
 
 
+[^1]: 
+[Evaluating the Econometric Evaluations of Training Programs with Experimental Data](https://www.jstor.org/tc/accept?origin=%2Fstable%2Fpdf%2F1806062.pdf) 
 
+[^2]: 
+[Causal Effects in Nonexperimental Studies: Reevaluating the Evaluation of
+Training Programs](https://uh.edu/~adkugler/Dehejia&Wahba_JASA.pdf)
 
 
 
