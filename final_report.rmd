@@ -74,8 +74,6 @@ lalondedata$educc2 <- lalondedata$educc ^ 2
 Through this report we try to analyze the impact of a training program by gauging its effect on the real annual earnings and its likeliness to help the participants earn a non-zero wage. To do so, we use  linear  and logitic regression models  respectively. We use a dataset from the National Supported Work (NSW) Demonstration (1975-1978)[^1][^2] for the same and build models using the AIC Forward criterion based on the statistical significance and reasonableness. We then find out that the variables treat(taking training), age, marital status, education,age given marital status and age given training have significant association with annual incomes suggesting that taking the training might be a very important factor associated with increase in wages. Also, We find that non-zero wages are associated with race, age, marital status, race given marital status, age given nodegree and age given training suggesting that training is not a very significant factor associated with non-zero wages by itself. Thus, it can be understood that training program as a factor does seem to have a very strong association with increase in wages. However, it is also found that it does not have much association with employment and is associated with other demographic factors and educational qualification.
 
 
-
-
 ## Introduction
 
 In the 1970s, researchers in the United States ran several randomized experiments to evaluate public policy programs. One of the most famous experiments was the National Supported Work (NSW) Demonstration, in which researchers wanted to assess whether or not job training for disadvantaged workers had an effect on their wages. Based on a subset of this dataset, in order to understand the impact of the training program, we need to look at two main questions:
@@ -224,16 +222,19 @@ xtable(confint(final_model), caption = "Confidence Interval")
 
 ```
 
-The baseline values incorporated in the intercept are treat=0,black=0,hispan = 0,age = 27, and married=0. Keeping other things constant, for an unmarried, non-black, non-hispanic, non-trainee, with an age of about 27, and education o about 10 years would earn 1743$.
+The baseline values incorporated in the intercept are treat=0,black=0,hispan = 0,age = 27, and married=0. Keeping other things constant, for an unmarried, non-black, non-hispanic, non-trainee, with an age of about 27, and education of about 10 years would earn 1743$.
 
 From the above model summary, we find that treat, agec, married, educc2 (square term of education) and the interactions of age and treat are strongly associated (statistically significant) with the differences in wages at the 0.05 level. The interaction between age and married is significant at the 0.1 significance level. With demographic factor, we notice that race (black or hispanic) is not significant with the difference in wages, p value greater than 0.05.  
 
-1. Controlling other factors, if the participant takes part in the training program, their annual earning is likely to increase by $3254.1 on average (p<0.001). The likely range of this value is ($1516.63 $4991.57)
+1. Controlling other factors, if the participant takes part in the training program, their annual earning is likely to increase by $3254.1 on average (p<0.001). The likely range of this value is ($1516.63 $4991.57).
 
-2. Controlling other factors, a unit increase of age from the mean value (27 years) tend to decrease the annual earnings by $220.1 (p<0.0001). The likely range of it is (-$322.99 -$117.20)
+2. Controlling other factors, a unit increase of age from the mean value (27 years) tend to decrease the annual earnings by $220.1 (p<0.0001). The likely range of it is (-$322.99 -$117.20).
 
-3. Controlling other factors, if the participant is married, his annual earnings tend to decrease by $1879.6 (p=0.01). The likely range of it is (-$3307.36 -$451.84)
+3. Controlling other factors, if the participant is married, his annual earnings tend to decrease by $1879.6 (p=0.01). The likely range of it is (-$3307.36 -$451.84).
 
+4. At the significance level of p<0.001, keeping other variables constant for every increase in age of a trainee his income increases by $300 over the 4 years over and above the main effects. The likely range of it is (-$124.2 -$476.4).
+
+5. At the significance level of p<0.1, keeping other variables constant for every increase in age of a married worker, his income increases by $138.0 over the 4 years over and above the main effects. The likely range of it is (-$1.69 -$277.68).
 
 
 \hfill\break
@@ -256,7 +257,7 @@ p6<-plot(final_model,which=5,col=c("thistle1"),pch=16)
 
 From the residual plots, there are no violations of assumptions:
 
-1) Linearity: The residual versus predictor plot seems random for the temp_median_c predictor variable, while the other predictors are categorical.
+1) Linearity: The residual versus predictor plot seems random for the variable "age", while the other predictors are categorical.
 2) Independence and Equal Variance: Absence of any pattern, randomness and wide-spread distributions over the spectrum support these assumptions.
 3) QQ-plot supports the assumption of Normality generally as the plot is a straight line. 
 
@@ -265,10 +266,10 @@ From the residual plots, there are no violations of assumptions:
 
 \hfill\break
 
-```{r echo = FALSE, out.width=c('30%', '30%', '30%'),  out.height='20%', message=FALSE, hold_position=TRUE}
+```{r echo = FALSE, out.width=c('30%', '30%', '30%'),  fig.align='center', out.height='20%', message=FALSE, hold_position=TRUE}
 
 # Outliers
-plot(final_model, which=2)
+#plot(final_model, which=2)
 
 # Outliers
 lev_scores <- hatvalues(final_model)
@@ -277,23 +278,22 @@ n <- nrow(lalondedata)
 plot(lev_scores, col=ifelse(lev_scores > (2*p/n), 'red2', 'navy'), type="h", ylab="Leverage score",xlab="Index",main="Leverage Scores for all observations")
 
 # High Influence
-plot(final_model, which=5, main = "Cook's Distance Analysis")
+#plot(final_model, which=5, main = "Cook's Distance Analysis")
 
 ```
 
-**Summary:** 
 There are a few outliers and some high leverage points in model, however according to cook's distance they are not high influence points. And the model does not improve even after removing the outliers and hence we have not removed these points from the model.
 
 #### Colineary 
 
 \hfill\break
-```{r echo = FALSE, results='asis', message=FALSE}
+```{r echo = FALSE, results='asis', message=FALSE, out.height="40%"}
 
 xtable(tidy(vif(final_model)), caption = "VIF")
 
 ```
 
-- According to VIF table, there is obvious colineary problem in this model. 
+According to VIF table, there is obvious colineary problem in this model. 
 
 ## Conclusion
 
