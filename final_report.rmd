@@ -6,11 +6,13 @@ author:
     - Xinyi Pan        (Programmer)
     - Maobin Guo       (Writer)
 output:
-  pdf_document: default
-  word_document: default
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
   html_document:
     
     df_print: paged
+  word_document: default
 ---
 
 ```{r, echo=FALSE, include=FALSE, message=FALSE}
@@ -94,11 +96,14 @@ These questions would help us understand the potential association of the impact
 
 # PART I
 
-## DATA & EDA 
+## DATA
 
-### Response Variable
+The data we have considered for the analysis consists of 614 observations and 11 variables viz.  X (Participant ID), treat, age, educ (education level), black, hispan (Hispan), married, nodegree, re74 (real earnings in 1974), re75 (real earnings in 1975), and re78 (real earnings in 1978). Further,  the dataset contains 185 male participants that have attended the training program and 429 male participants that have not attended the training program. There are 243 black and 72 hispanic participants. 
+We converted treat, black, hispan, married, nodegree into binary factor variables, educ to a discrete variable and age as a continuous variable. The columns X and re75 will not be used in this analysis. We will not use re75 as it cannot be considered as a constant baseline among the participants. 
 
-Since the goal is to determine the effects of job training on salary increment, the response variable is the difference in salary between 1974 and 1978. Its distribution is quite normal; hence there is no transformation for the response variable. 
+### Exploratory Data Analysis
+
+We initially noticed that re78 was not normally distributed so that could not be used as the response variable. The difference between re78 and re74 seemed to portray more characteristics of normal distribution hence we have taken this difference as the model’s response variable. 
 
 ```{r, echo=FALSE, out.height='20%', fig.align='center', fig.show='hold'}
 
@@ -119,9 +124,9 @@ ggplot(lalondedata, aes(x = diff)) +
 
 ```
 
-### Predict Vraibles
+It is observed the variable age shows a slightly decreasing linear relationship with the wage differences, while variable education shows a non-linear trend. Further, we also see that categorical variables treat, black, hispan and married seem to show some differences based on the categories. We then look into the interactions and find that the association between wage differences and treat seems to differ by age; while one has an increasing trend the other has a decreasing trend. The trend between the two also shows differences by races , educ and married. We also find that trends between the wage differences and education differ by married. This is also found so for the age variable to differ by married.
 
-Unlike the relationship between age and 'treat' (Right), the relationship between education(left) and 'treat' is not linear. It indicates that there is some non-linear transformation should be performed on education. After evaluation, we decide to use the square to transform the variable, and the final model's p-value confirmed the is.
+
 
 ```{r, echo=FALSE, out.width=c('50%', '50%'), out.height='20%', fig.show='hold', message=FALSE}
 
@@ -143,12 +148,7 @@ ggplot(lalondedata, aes(x = age, y = diff)) +
 ```
 
 
-### Multicollinearity
-
-Intuitively, education duration has a strong correlation with a high school degree.  In this dataset, the correlation of the two variables is `r round(cor(as.numeric(lalondedata$nodegree), lalondedata$educ), 2)` which suggests that we could not include both of them in our model. After evaluation, education duration was preserved since it can provide more information than the high school degree variable.
-
-
-### Interactions 
+Unlike the relationship between age and 'treat' (Right), the relationship between education(left) and 'treat' is not linear. It indicates that there is some non-linear transformation should be performed on education. After evaluation, we decide to use the square to transform the variable.
 
 
 ```{r, echo=FALSE,  fig.show='hold', out.height='20%', fig.align='center' , message=FALSE}
@@ -163,34 +163,46 @@ ggplot(lalondedata, aes(x = age, y = diff)) +
 
 ```
 
-- The annual earnings trend with the increase of age is different according to treat. Further investigation of this interaction would be exerted in the model fitting step.
+The plot above illustrates the interaction between age and treat with the response variable. The annual earnings trend with the increase of age is different according to treat. Further investigation of this interaction would be exerted in the model fitting step.
 
 ## Model
 
 
 ### Model selection
 
-1. We find some signs of interaction between "treat" and "age" in EDA. The business was confirmed in our model. Its p-value is significantly small than 0.05. 
+Based on these, we try building a model using the AIC forward/ BIC and selecting the model. 
 
-2. Interaction between "married" and "age" was found in this step. It's p-Value is slightly above 0.05, but it small than 0.1. The ANOVA test also indicates that it would improve our model significantly. Hence it was preserved in our final model. 
+Null Model contained only the treat variable while the full model contained all the predictors along with its interactions. The null model has an AIC value of 12771.89 while the full model has an AIC value of 12764.68. 
 
-3. The education was not linear in the plot of EDA, and this finding was also confirmed. Its square transformation was significant (p-value: 0.03).  
+The output of Forward AIC model is:
+
+diff ~ treat + agec + married + educc2 + treat:agec + 
+    agec:married
+
+Where agec - age centered variable and educc - education centered variable.
+
+The AIC model contains the variables, treat, agec, married, educc2 (squared term of educ) along with the interaction between treat & agec and agec & married.
+
+On comparing the model to the Null Model and Full Model, we find that the above model is more statistically significant (p-value: 6.668e-07 (null) and p-value:0.3817 (full)). Further, we test excluding and including some variables and found this to indeed be the most statistically significant one. However, we add the variables black and hispan as is required for analysing the question of interest. We also add the variable educc as we retain its second order term [^Shows a significant p-value for the dataset.]
+
+Interaction between "married" and "age" was found in this step. It's p-Value is slightly above 0.05, but it small than 0.1. The ANOVA test also indicates that it would improve our model significantly. Hence it was preserved in our final model. 
+
+
+Intuitively, education duration has a strong correlation with a high school degree.  In this dataset, the correlation of the two variables is `r round(cor(as.numeric(lalondedata$nodegree), lalondedata$educ), 2)` which suggests that we could not include both of them in our model. After evaluation, education duration was preserved since it can provide more information than the high school degree variable.
+
+
 
 ### Final model
 
 $$
 \begin{aligned}
-diff_{i} = &\beta_{0} + \beta_{1}*black_{i} + \beta_{2}*hispan_{i} + \beta_{3}*agec_{i} + \\ 
-                 &\beta_{4}*married_{i} + \beta_{5}*treat_{i}:agec_{i} + \beta_{6}*educc_{i} + \\
-                 &\beta_{7}*educc_{i}^2 + \beta_{8}agec:married_{i} + \varepsilon_{i}
+diff_{i} = &\beta_{0} + \beta_{1}*black_{i} + \beta_{2}*hispan_{i} + \beta_{3}*agec_{i} + \beta_{4}*married_{i} + \beta_{5}*treat_{i}:agec_{i} + \\ 
+                 & \beta_{6}*educc_{i} + \beta_{7}*educc_{i}^2 + \beta_{8}agec:married_{i} + \varepsilon_{i} ;\varepsilon \overset{iid}{\sim} \mathcal{N}(\mu,\,\sigma^{2})\
 \end{aligned}
 $$
 
-- agec: Centred age
 
-- educc: Centred educ
-
-### Model Summary & CI
+### Model Summary
 
 ```{r echo = FALSE, results='asis' ,  fig.show='hold'}
 
@@ -216,9 +228,15 @@ tdf <- data.frame(
 
 xtable(tdf, caption = "Evaluationl")
 
-xtable(confint(final_model), caption = "Confidence Interval")
+#xtable(confint(final_model), caption = "Confidence Interval")
 
 ```
+
+From the above, we find that ………. Are strongly associated with the differences in wages. Further at a level of significance, it can be observed that …. Increase or decrease . with ….. Keeping other variables constant.
+
+From the above, we find that treat is significant at level …… And the likely range of wage difference is ….. This suggests that training does have an association with higher wages. 
+
+With demographic factors…..
 
 
 \hfill\break
@@ -268,7 +286,7 @@ plot(final_model, which=5, main = "Cook's Distance Analysis")
 **Summary:** 
 There are some outliers and high leverage points; however, there are not high influence data. Hence, these data points can be preserved in the model without worry. 
 
-#### Collinearity 
+#### Colineary 
 
 \hfill\break
 ```{r echo = FALSE, results='asis', message=FALSE}
@@ -301,11 +319,17 @@ xtable(tidy(vif(final_model)), caption = "VIF")
 2. Some outliers deserve further investigation. 
 
 
-\newpage
+
 
 # Part II
 
-## DATA & EDA
+## DATA
+
+To answer the questions of interest, we converted the re78 variable into a binary response variable. A 0 value of the variable was taken to indicate that the participant made no earnings in 1978 while a 1 to indicate some (non-zero) monetary earnings in 1978. In other words, the variable is an indicator of the employment status of the participants in 1978 and is made our response variable. The variable re74 (real earnings in 1974) has also been removed from the analysis as the main aim was to look at the impact of training on positive wages (employment status). The other variables have been retained as was also mentioned in Part 1. 
+
+### EDA
+
+
 
 ```{r, echo=FALSE, message=FALSE}
 
@@ -347,12 +371,9 @@ lalondedata$agec2 <- lalondedata$agec ^ 2
 
 ```
 
-### Collinearity
 
-- As the same reason mentioned in Part I, we exclude "educ" from our model.
+We then look at some of the trends between the other variables and the response variable. On some analysis, we find that this employment variable seems to show relation with age.
 
-
-### Interactions
 
 ```{r echo = FALSE, results='asis', out.width=c('50%', '50%'),  out.height='20%'}
 
@@ -374,9 +395,11 @@ ggplot(lalondedata, aes(x = earnf, y = age, fill = earnf)) +
 
 ```
 
-- As reported by the first plots (left), the role of age in the employment rate is different according to whether the works take job training or not. 
 
-- The second plot points out that the role of age in employment rate is also influenced by whether the works have a high school degree or not.
+As reported by the first plot (left), the relation between age and employment in 1978 is different based on whether or not the employee took the training program.
+The second plot points out that the relation between employment and age is also influenced by whether or not the worker has a high school degree
+
+
 
 
 ```{r echo = FALSE, results='asis', message=FALSE}
@@ -394,32 +417,36 @@ xtable(hispan_marriage, caption = "Employed rate with marital status - Hispanic"
 
 ```
 
-- The two tables show some differences in the relationship between marital status and employment rate according to race. For the Hispanic works, the single workers' unemployment rate is obviously lower than single workers of other races (8% vs. 26%). At the same time, this advantage disappears in the married Hispanic workers. The married Hispanic workers' unemployment rate is 28%, while Non-Hispanic races' married unemployment rate is 21%. This interesting sign of interaction would be further investigated in the model fitting. 
+We also observe through the two tables shown that there are some differences in the relationship between marital status and positive wages according to race. For the Hispanic participants, the unmarried workers’ unemployment rate seems to be lower than single workers of other races (8% vs. 26%). At the same time, this advantage disappears in the married Hispanic workers. The married Hispanic workers’ unemployment rate is 28%, while Non-Hispanic races’ married unemployment rate is 21%. This interesting sign of interaction would be further investigated in the model fitting.^[ The Chi-square tests for independence are not significant. The variables are explored later.]
 
 ## Model
 
 ### Model selection
 
-1. On the basis of the above, the logistic regression model is developed after considering the stepwise and forward built models using the AIC criteria and then selected. The Null Model used is :
+Based on the above trends, we build a logistic regression model using the AIC forward model selection method. For doing so we construct our 
+Null Model as:
 $$
 \begin{aligned}
 logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat_{i} + \beta_{2}*black_{i} + \beta_{3}*agec_{i} + \beta_{4}*agec_{i}^2 + \varepsilon_{i}
 \end{aligned}
 $$
-and the Full Model used is:
+
+Full Model as:
 $$
 \begin{aligned}
 logit(\pi_{i}) = &\beta_{0} + (\beta_{1}agec_{i} + \beta_{2}educc_{i} + \beta_{3}treat_{i} + \beta_{4}black_{i} + \beta_{5}hispan_{i} + \beta_{6}married_{i} + \beta_{7}nodegree_{i})^2+ \\ &\beta_{8}*age_{i}c^2 + \varepsilon_{i}
 \end{aligned}
 $$
 
-2. By AIC forward-searching, we find a square transform of "age" is significant in the model. After verification with ANOVA test, we decide to keep this transformation in the final model
 
-3. The interactions between "age" and "married" and "degree" were confirmed by the p-value. Even though the p-value is "married" and "treat" not strong significant, the ANOVA test tips it means full. 
 
-4. The interaction between "hispan1" and "married" was confirmed, and its p-value is significant.
 
-5. Tread was not significant in our final model. However, it is a key predictor variable for answering the question. Hence, we preserve it in our final model. 
+
+Using the AIC forward model, we find that the square transform of “age” is significant in the model. After verification with ANOVA test, we decide to keep this transformation in the final model
+
+As shown in the model output, the interactions between “age” &“nodegree” and “hispan” & “married” seems to be statistically significant, with a p value of 0.03 and 0.01 respectively. Interestingly, even though the interaction between treat and age is weakly significant (p-value=0.09), the ANOVA test confirmed its significance and hence we have included this in the final model. As the variable treat is statistically not significant (p-value=0.4), we preserve it in our final model as it is used to answer the questions of interest.
+
+
 
 
 ### Final model
@@ -431,7 +458,6 @@ logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat_{i} + \beta_{2}*black_{i} + \beta_
 \end{aligned}
 $$
 
-- agec: Centred age
 
 ```{r, echo=FALSE, message=FALSE}
 
@@ -451,7 +477,7 @@ model_sum <- summary(full_model)
 
 ```
 
-### Model Summary & CI
+### Model Summary
 
 
 ```{r echo = FALSE, results='asis', message=FALSE}
@@ -471,11 +497,21 @@ xtable(tdf, caption = "Deviance")
 
 ```
 
+The baseline values taken in the intercept is treat=0 and black=0, nodegree=0, hispan=0, age=27, and married=0. Keeping all predictors at 0, the birth weight of the newborn would be 46.39 ounces (does not make any sense as centering is not done).
+Keeping other variables constant,
+1. The odds ratio of a black employee having earnings in 1978 decreases by 0.417 times when compared to a non-black employee.
+2. The odds ratio of a hispanic employee having earnings in 1978 increases by 3.32 times when compared to a non-hispanic employee.
+
+
+
+
+
+
 ### Model Verification
 
 #### Residuals
 
-```{r echo = FALSE, results='asis', out.width=c('30%', '30%', '30%'),  out.height='25%'}
+```{r echo = FALSE, results='asis',  out.height='30%'}
 
 binnedplot(
   x = fitted(full_model),
@@ -487,55 +523,49 @@ binnedplot(
   col.pts = "navy"
 )
 
-binnedplot(
-  x = lalondedata$agec,
-  y = rawresid,
-  xlab = "Age (Centered)",
-  col.int = "red4",
-  ylab = "Avg. residuals",
-  main = "Binned residual plot",
-  col.pts = "navy"
-)
+#binnedplot(
+#  x = lalondedata$agec,
+#  y = rawresid,
+#  xlab = "Age (Centered)",
+#  col.int = "red4",
+#  ylab = "Avg. residuals",
+#  main = "Binned residual plot",
+#  col.pts = "navy"
+#)
 
-binnedplot(
-  x = lalondedata$educc,
-  y = rawresid,
-  xlab = "Education (Centered)",
-  col.int = "red4",
-  ylab = "Avg. residuals",
-  main = "Binned residual plot",
-  col.pts = "navy"
-)
+#binnedplot(
+#  x = lalondedata$educc,
+#  y = rawresid,
+#  xlab = "Education (Centered)",
+#  col.int = "red4",
+#  ylab = "Avg. residuals",
+#  main = "Binned residual plot",
+#  col.pts = "navy"
+#)
 
 ```
 
-- According to the binnedplots, about 95% points reside inside the red bend. It is a strong justification for the model’s efficiency.  
+The binned plot above illustrates the average residuals vs predicted probabilities. As shown, more than 95% of points reside inside the red band (within 95% confidence intervals) and no distinct pattern is observed. The binned plots for average residuals vs individual variables have been plotted and these plots also do not violate the above rules. This concludes a strong justification for the model’s efficiency.
 
-#### Deviance
+Null model deviance : 666.5
+Final model deviance : 627.54
+The decrease of deviance indicates that the model is valid.
 
-
-- Null model deviance : `r round(model_sum$null.deviance,2)`
-
-- Final model deviance : `r round(model_sum$deviance,2)`
-
-- The decrease of deviance indicates that the model is valid.
+#### Colineary
 
 
-#### Outliers and High Leverage
+According to the table, most of the VIF values for the predictors are below 5, indicating moderately correlated. However, age centered seems to have a VIF value of 6.8, indicating high correlation. 
 
-
-#### Collinearity
-
-
-```{r echo = FALSE, fig.show='hold', results='asis', message=FALSE}
-
+```{r echo = FALSE, results='asis', message=FALSE}
 xtable(tidy(vif(full_model)), caption = "VIF")
-
 ```
 
-- According to the table, all item's VIF value are below 10.  Hence, there is no remarkable collinearity in this model. 
+\hfill\break
+\hfill\break
+\hfill\break
 
 #### Summary 
+
 
 Various indicators point out that the final model is valid and can be used to answer the questions  about the dataset. 
 
@@ -554,17 +584,14 @@ xtable(Conf_mat$table, caption = "Confusion Matrix")
 
 ```
 
-- Sensitivity : `r round(Conf_mat$byClass[c("Sensitivity")], 2)`
 
-- Specificity : `r round(Conf_mat$byClass[c("Specificity")], 2)`
+The Sensitivity value, also known as true positive rate $\frac{TP}{TP+FN}$ of the model is 0.59.
 
-- Accuracy : `r Conf_mat$overall["Accuracy"]`
+The Specificity value, also known as true negative rate $\frac{TN}{FP+TN}$ of the model is  0.64
 
-
-#### ROC
+The Accuracy $\frac{TP+TN}{TP+TN+FP+FN}$ of the model is 0.60, 60%.
 
 ```{r echo = FALSE, results='asis', fig.align='center', message=FALSE,  out.height='25%'}
-
 
 cutoff = "best"
 
@@ -579,30 +606,43 @@ roc_value <-coords(roc, cutoff, transpose = FALSE)
 
 ```
 
-- AUC: `r round(roc$auc, 2)`
+The ROC curve above has a AUC value of 0.65 and a cut-off value of 0.81.
 
-- Cut-off: `r round(roc_value[1], 2)`
+Discussion
+
+1. Is there evidence that workers who receive job training tend to be more likely to have positive (non-zero) wages than workers who do not receive job training? Quantify the effect of the treatment, that is, receiving job training, on the odds of having non-zero wages.LIMITS
+
+According to the model, the variable treat is not statistically significant as it has a p value greater than 0.05. Hence receiving job training would not directly influence the odds of these worker’s positive wages and cannot quantify the effect of treatment on the odds of having non-zero wages. However, the interaction item “treat1:agec” is relatively significant. 
+
+
+3) Is there any evidence that the effects differ by demographic groups?
+
+Yes. In the logistic regression model, black and hispan are statistically significant. For a black worker, his odds of getting a job are 41% lower than a non-black worker under the same other conditions.
+The odds ratio of a hispanic employee having positive earnings in 1978 increases by 3.32 times when compared to a non-hispanic employee.
+
+
+4) Are there other interesting associations with positive wages that are worth mentioning?
+
+Race of Hispanic and marital status. Controlling other factors, a Hispanic workers odd to be employed is 231% higher than others. However, the effect would bring down by being married. A married Hispanic worker’s odds of getting a job are 45% lower than others under the same conditions.
+
+Age. Age is a complex factor in our model. Generally speaking, aging would increase these workers’ odds of being jobless. Taking the job training may slow down the trends.
+
+
 
 ## Conclusion
 
-- Since the treat's p-value is not significant, receiving job training would not directly influence the odds of these worker's positive wages. However, the interaction item "treat1:agec" is relatively significant. 
 
-- Some other factors would influence a worker's odds of getting positive wages.
-
-1. Race of black. For a black worker, his/her odds of getting a job are 41% lower than a non-black worker under the same other conditions. 
-
-2. Race of Hispanic and marital status. Controlling other factors, a Hispanic worker's odd to be employed is 231% higher than others. However, the effect would bring down by being married. A married Hispanic worker's odds of getting a job are 45% lower than others under the same conditions. 
-
-3. Age. Age is a complex factor in our model. Generally speaking, aging would increase these workers' odds of being jobless. Taking the job training may slow down the trends. 
+To understand the impact of job training on positive wages, we built a logistic regression model. We confirmed the model using AIC forward selection and ANOVA tests. The assessment of the model was done using binned residual plots and identifying specificity, sensitivity, accuracy, and area under the ROC. We noticed that the variable treat is not statistically significant, inferring that job training would not directly influence the odds of these worker’s positive wages. Race and Age seemed to be statistically significant when predicting the positive wages. Three interactions, Age & treat, hispan & married, age & "no degree" are also statistically significant as determined by p value less than 0.05. The effect of age is hard to interpret because it involves square transformation and interaction with treat.
 
 
-## Deficiency
+## Limitation 
 
-- The effect of age is hard to interpret because it involves square transformation and interaction with treat. Moreover, their significants are not strong enough. This would cause the model to become less convincing.
+Sensitivity and accuracy are relatively low.
+Data on the long term effect of training is missing in this dataset. Intuitively, job training would exert its influence on people’s work in the long run. However, it can not be verified in this analysis. There is an imbalance in 
+The number of participants who joined the training program
+The ratio of hispanics to non-hispanics
 
-- Sensitivity and accuracy are relatively low. 
 
-- Data on the long term effect of training is missing in this dataset. Intuitively, job training would exert its influence on people's work in the long run. However, it can not be verified in this analysis. 
 
 \newpage
 # Appendix I (Part1 R Code)
