@@ -232,8 +232,8 @@ xtable(tdf, caption = "Evaluationl")
 
 ```
 
-The baseline values incorporated in the intercept are treat=0,black=0,hispan=0,age= 27, and married=0. 
-From the above model summary, we find that treat, agec, married, educc2 (square term of education) and the interactions of age and treat along with age and married are strongly associated (statistically significant) with the differences in wages. Keeping other variables constant,
+The baseline values incorporated in the intercept are treat=0,black=0,hispan = 0,age = 27, and married=0. 
+From the above model summary, we find that treat, agec, married, educc2 (square term of education) and the interactions of age and treat are strongly associated (statistically significant) with the differences in wages at the 0.05 level. The interaction between age and married is significant at the 0.1 significance level. With demographic factor, we notice that race (black or hispanic) is not significant with the difference in wages, p value greater than 0.05. Keeping other variables constant,
 1. If the participant takes part in the training program, their annual earning is likely to increase by $813.5
 2. A unit increase of age from the mean value (27 years) tend to decrease the annual earnings by $55.02
 3. If the participant is married, his annual earnings tend to decrease by $469.90
