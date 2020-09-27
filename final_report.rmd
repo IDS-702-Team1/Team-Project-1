@@ -434,10 +434,21 @@ We also observe through the two tables shown that there are some differences in 
 
 Based on the above trends, we build a logistic regression model using the AIC forward model selection method. For doing so we construct our 
 Null Model as:
-logit(πi)=β0+β1∗treat
+
+$$
+\begin{aligned}
+logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat_{i}
+\end{aligned}
+$$
 
 Full Model as:
-logit(πi)=β0+(β1ageci+β2educci+β3treati+β4blacki+β5hispani+β6marriedi+β7nodegreei)2+β8∗ageic2+εi [^ A number of extra variables are considered to understand their role in the model and get to the most significant variables among these.]
+
+$$
+\begin{aligned}
+logit(\pi_{i}) = &\beta_{0} + (\beta_{1}*treat_{i} + \beta_{2}*black_{i} + \beta_{3}*hispan_{i} + \beta_{4}*agec_{i} + \beta_{5}*married_{i} + \beta_{6}*nodegree_{i})^2 + \beta_{5}*agec_{i}^2 + \varepsilon_{i}
+\end{aligned}
+$$
+[^ A number of extra variables are considered to understand their role in the model and get to the most significant variables among these.]
 
 
 1. On the basis of the above, the logistic regression model is developed after considering the stepwise and forward built models using the AIC criteria and then selected. The Null Model used is :
@@ -446,7 +457,9 @@ $$
 logit(\pi_{i}) = &\beta_{0} + \beta_{1}*treat_{i} + \beta_{2}*black_{i} + \beta_{3}*agec_{i} + \beta_{4}*agec_{i}^2 + \varepsilon_{i}
 \end{aligned}
 $$
+
 and the Full Model used is:
+
 $$
 \begin{aligned}
 logit(\pi_{i}) = &\beta_{0} + (\beta_{1}agec_{i} + \beta_{2}educc_{i} + \beta_{3}treat_{i} + \beta_{4}black_{i} + \beta_{5}hispan_{i} + \beta_{6}married_{i} + \beta_{7}nodegree_{i})^2+ \\ &\beta_{8}*age_{i}c^2 + \varepsilon_{i}
