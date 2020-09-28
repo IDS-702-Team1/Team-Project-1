@@ -322,11 +322,11 @@ xtable(tidy(vif(final_model)), caption = "VIF")
 
 4. Is there any evidence that the effects differ by demographic groups?
 
-  - We are considering age and race to be considered as demographic factors. Using the linear regression model, race (black and hispan) does not seem to be statistically significant with the response variable. Hence  there is no evidence that the difference of real earnings from 1978 and 1974 differ by race.  
+  - We look at the races and age as demographic factors. From the model, we find that the effects do not differ by races. However, we find that the effects differ by treat. We find that for every year increase in age for a trainee there is an increase of $ 300 over the main effects is statistically significant at level. 
 
 5. Are there other interesting associations with wages that are worth mentioning?
 
-  - Along with Treat and the participant's marital status, education squared term, and the interaction between agec & married seems to be statistically significant. However, age seems to be statistically significant (low p value) and has a negative slope. This indicates that for a unit increase in age, the real earnings over 4 years would tend to decrease by $300.0. The interaction of treat and age is significant in our model. The worker's martial status has a negative slope indicating that a married participant tends to have a decrease in wages over four years. Education duration would increase workers’ salaries. Given the quadratic effect of the education variable, the worker’s salary is expected to increase faster as he received more than nine years of education. Unfortunately, he will be adversely affected if his education background is less than 9 years, as shown in the comparison plot. There is interaction effects between the worker’s age and marital status on his earnings. With all other factors controlled, the job applicant’s married status can offset the age discrimination and provide him a higher estimated salary. 
+  - Along with Treat and the participant's marital status, education squared term, and the interaction between agec & married seems to be statistically significant. However, age seems to be statistically significant (low p value) and has a negative slope. The worker's martial status has a negative slope indicating that a married participant tends to have a decrease in wages over four years. Education duration would increase workers’ salaries. Given the quadratic effect of the education variable, the worker’s salary is expected to increase faster as he received more than nine years of education. Unfortunately, he will be adversely affected if his education background is less than 9 years, as shown in the comparison plot. There is interaction effects between the worker’s age and marital status on his earnings. With all other factors controlled, the job applicant’s married status can offset the age discrimination and provide him a higher estimated salary. 
 
 
 ## Conclusion
@@ -568,8 +568,6 @@ According to the table, most of the VIF values for the predictors are below 5, i
 ```
 
 To summarize, our final model can be used to answer our questions of interest in light of the above discussion.
-
-### Model Assessment
 
 ```{r echo = FALSE, results='asis', message=FALSE}
 
