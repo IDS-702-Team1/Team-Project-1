@@ -250,9 +250,6 @@ From the above model summary, we find that treat, agec, married, educc2 (square 
 
 5. At the significance level of p<0.1, keeping other variables constant for every increase in age of a married worker, his income tends to increases by $34.5 annually over and above the main effects. 
 
-### Model Assessment 
-
-
 ```{r echo = FALSE, fig.align='center',  out.width=c('30%', '30%', '30%', '30%'), fig.show='hold', out.height='30%'}
 
 #plot(final_model, which=1)
@@ -325,16 +322,17 @@ xtable(tidy(vif(final_model)), caption = "VIF")
 
 4. Is there any evidence that the effects differ by demographic groups?
 
-  - We are considering age and race to be considered as demographic factors. Using the linear regression model, race (black and hispan) does not seem to be statistically significant with the response variable. Hence  there is no evidence that the difference of real earnings from 1978 and 1974 differ by race. However, age seems to be statistically significant (low p value) and has a negative slope. This indicates that for a unit increase in age, the real earnings over 4 years would tend to decrease by $220.10. The interaction of treat and age is significant in our model. Workers who received training would receive $124 per year for per 1-year increase in age, while the no-training workers' salary would decrease by $322 per year for per 1-year increase in age.
+  - We are considering age and race to be considered as demographic factors. Using the linear regression model, race (black and hispan) does not seem to be statistically significant with the response variable. Hence  there is no evidence that the difference of real earnings from 1978 and 1974 differ by race.  
 
 5. Are there other interesting associations with wages that are worth mentioning?
 
-  - Along with Treat and the demographic factors, the participant's marital status, education squared term, and the interaction between treat & agec and agec & married seems to be statistically significant. The worker's martial status has a negative slope indicating that a married participant tends to have a decrease in wages over four years. Education duration would increase workers’ salaries. Given the quadratic effect of the education variable, the worker’s salary is expected to increase faster as he received more than nine years of education. Unfortunately, he will be adversely affected if his education background is less than 9 years, as shown in the comparison plot. There is interaction effects between the worker’s age and marital status on his earnings. With all other factors controlled, the job applicant’s married status can offset the age discrimination and provide him a higher estimated salary. 
+  - Along with Treat and the participant's marital status, education squared term, and the interaction between agec & married seems to be statistically significant. However, age seems to be statistically significant (low p value) and has a negative slope. This indicates that for a unit increase in age, the real earnings over 4 years would tend to decrease by $300.0. The interaction of treat and age is significant in our model. The worker's martial status has a negative slope indicating that a married participant tends to have a decrease in wages over four years. Education duration would increase workers’ salaries. Given the quadratic effect of the education variable, the worker’s salary is expected to increase faster as he received more than nine years of education. Unfortunately, he will be adversely affected if his education background is less than 9 years, as shown in the comparison plot. There is interaction effects between the worker’s age and marital status on his earnings. With all other factors controlled, the job applicant’s married status can offset the age discrimination and provide him a higher estimated salary. 
 
 
 ## Conclusion
 
-To understand the impact of job training on the difference in wages from 1978 to 1974, we built a multiple linear regression model. We confirmed the model using AIC forward selection and ANOVA tests. The linear regression assumptions for the model were checked and we tested for potential outliers. To ensure no multicollinearity, VIF scores were generated, noticing that all variables had VIF value below 5.  We noticed that the variable treat is statistically significant, inferring that job training positively influences the increase in real earnings from 1974 to 1978. In terms of the effect of demographic factors on the response variable, race does not seem to be statistically significant while age seems to be. Interestingly, marital status and education have strong associations with the difference in wages. Two interactions, Age & treat, age & married are also statistically significant as determined by p value less than 0.05. The effect of age is hard to interpret because it involves square transformation and interaction with treat.
+To understand the impact of job training on the difference in wages from 1978 to 1974, we built a multiple linear regression model. We confirmed the model using AIC forward selection and ANOVA tests. The linear regression assumptions for the model were checked and we tested for potential outliers. To ensure no multicollinearity, VIF scores were generated, noticing that all variables had VIF value below 5.  We noticed that the variable treat is statistically significant, inferring that job training positively influences the increase in real earnings from 1974 to 1978. In terms of the effect of demographic factors on the response variable, race does not seem to be statistically significant while age seems to be. Interestingly, marital status and education have strong associations with the difference in wages. Two interactions, Age & treat, age & married are also statistically significant as determined by p value less than 0.05. In a nutshell, it can be understood that training is a very significant factor associated with wage increment.
+
 
 #### Limitations: 
 The final model's R-squared is only 0.088, which is relatively low, 8.8% proportion of variation in the response variable is being explained by the regression model.
@@ -458,9 +456,7 @@ The full model includes all the variables and possible interactions among them.
 
 Using the AIC forward model, we find that the square transform of “age” is significant in the model. After verification with ANOVA test, we decide to keep this transformation in the final model
 
-As shown in the model output, the interactions between “age” &“nodegree” and “hispan” & “married” seems to be statistically significant, with a p value of 0.03 and 0.01 respectively. Interestingly, even though the interaction between treat and age is weakly significant (p-value=0.09), the ANOVA test confirmed its significance and hence we have included this in the final model. Although the variable treat is statistically not significant (p-value=0.4), we preserve it in our final model as it is used to answer the questions of interest.
-
-
+As shown in the model output, the interactions between “age” &“nodegree” and “hispan” & “married” seems to be statistically significant, with a p value of 0.03 and 0.01 respectively. Interestingly, even though the interaction between treat and age is weakly significant (p-value=0.09), the ANOVA test confirmed its significance and hence we have included this in the final model. Although the variable treat is statistically not significant (p-value=0.4), we preserve it in our final model as it is used to answer the questions of interest. This also makes sense as age, marital status, nodegree (a proxy of education qualification) as factors associated. For interaction variables, the particular situation of the person given his age , marital status and race matter.
 
 
 ### Final model
@@ -518,7 +514,7 @@ From the above, it can be seen that the variables black, agec2, hispan1, treat:a
 
 
 
-### Model Verification
+### Model Assessment and Validation
 
 #### Residuals
 
@@ -614,15 +610,13 @@ The ROC curve above has a AUC value of 0.65 and a cut-off value of 0.81, which w
 
 ### Discussion
 
-1. According to the model, the variable treat is not statistically significant as it has a p value greater than 0.05. Hence receiving job training would not directly influence the odds of these worker’s positive wages and cannot quantify the effect of treatment on the odds of having non-zero wages. However, the interaction item “treat1:agec” is relatively significant. At the significance level of 0.1, keeping other variables constant for every increase in age of a trainee the odds of getting a job (receiving earnings in 1978) increases by 4.67% income and above the main effects. 
+According to the model, the variable treat is not statistically significant as it has a p value greater than 0.05. Hence receiving job training would not directly influence the odds of these worker’s positive wages and cannot quantify the effect of treatment on the odds of having non-zero wages. However, the interaction item “treat1:agec” is relatively significant. 
 
+There is evidence that the effects differ by demographic groups. At the significance level of 0.1, keeping other variables constant for every increase in age of a trainee the odds of getting a job (receiving earnings in 1978) increases by 4.67% income and above the main effects. In the logistic regression model, black and hispan are statistically significant. For a black worker, his odds of getting a job are 41% lower than a non-black worker under the same other conditions. The odds ratio of a hispanic employee having positive earnings in 1978 increases by 2.32 times when compared to a non-hispanic employee.
 
-2. There is evidence that the effects differ by demographic groups. In the logistic regression model, black and hispan are statistically significant. For a black worker, his odds of getting a job are 41% lower than a non-black worker under the same other conditions. The odds ratio of a hispanic employee having positive earnings in 1978 increases by 2.32 times when compared to a non-hispanic employee.
+Hispanic Race and marital status. Controlling other factors, a Hispanic workers odd to be employed is 231% higher than others. However, the effect would be brought down by being married. A married Hispanic worker’s odds of getting a job are 83.4% lower.
 
-
-3.  Hispanic Race and marital status. Controlling other factors, a Hispanic workers odd to be employed is 231% higher than others. However, the effect would be brought down by being married. A married Hispanic worker’s odds of getting a job are 83.4% lower.
-
-4.  Age is a complex factor in our model. Generally speaking, the coefficient of age seems to accelerate the trend of the workers’ odds of not havng a job. Taking the job training may slow down the decreasing trends.
+Age is a complex factor in our model. Generally speaking, the coefficient of age seems to accelerate the trend of the workers’ odds of not havng a job. Taking the job training may slow down the decreasing trends.
 
 ## Conclusion
 
