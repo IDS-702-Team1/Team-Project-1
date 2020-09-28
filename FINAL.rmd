@@ -75,7 +75,7 @@ This report analyzes the impact of a training program by examining its effect on
 Demonstration (1975-1978)[^1][^2]  for the same and build models using the AIC Forward criterion based on the
 statistical significance and reasonableness. We then find out that the variables treat(taking training), age, marital status, education, age given marital status, 
 and age given training have significant associations with annual incomes, suggesting that taking the training might be a very important factor associated with an increase in wages. 
-Also, We find that non-zero wages are associated with race, age, marital status, race given marital status, age given nodegree and age given training suggesting that training is not a significant factor associated with non-zero wages by itself. Thus, it can be understood that the training program as a factor does seem to have a very strong association with an increase in wages. 
+Also, we find that non-zero wages are associated with race, age, marital status, race given marital status, age given nodegree and age given training suggesting that training is not a significant factor associated with non-zero wages by itself. Thus, it can be understood that the training program as a factor does seem to have a very strong association with an increase in wages. 
 However, it is also found that it does not have
 much association with non-zero wages and is associated with other demographic factors and educational qualifications.
 
@@ -177,7 +177,7 @@ diff_{i} =& \beta_{0} + \beta_{1}*treat + \beta_{2}*agec + \beta_{3}*married + \
 \end{aligned}
 $$
 
-Where agec stands for age centered variable and educc stands for education centered variable.
+where agec stands for age centered variable and educc stands for education centered variable.
 
 The AIC model contains the variables, treat, agec, married, educc, and
 educc2 (squared term of educ) along with the interaction between treat & agec and agec & married.
@@ -246,9 +246,9 @@ From the above model summary, we find that treat, agec, married, educc2 (square 
 
 3. Controlling other factors, if the participant is married, his earnings tend to decrease by $1879.6 (p=0.01) over 4 years. The likely range of it is (-$3307.36, -$451.84). The average annual decrease would be $469.9.
 
-4. At the significance level of p<0.001, keeping other variables constant for every increase in age of a trainee (took the training program) his income increases by $75 annually over and above the main effects. 
+4. At the significance level of p<0.001, keeping other variables constant for every increase in age of a trainee (took the training program) his income tends to increases by $75 annually over and above the main effects. 
 
-5. At the significance level of p<0.1, keeping other variables constant for every increase in age of a married worker, his income tend to increases by $34.5 annually over and above the main effects. 
+5. At the significance level of p<0.1, keeping other variables constant for every increase in age of a married worker, his income tends to increases by $34.5 annually over and above the main effects. 
 
 ### Model Assessment 
 
@@ -522,7 +522,7 @@ From the above, it can be seen that the variables black, agec2, hispan1, treat:a
 
 #### Residuals
 
-```{r echo = FALSE, results='asis',  out.height='25%'}
+```{r echo = FALSE, results='asis',  out.height='25%', fig.align='center'}
 
 binnedplot(
   x = fitted(full_model),
